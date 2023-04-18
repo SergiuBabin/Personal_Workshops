@@ -4,6 +4,8 @@ import com.sergiu.babin.controller.BookController;
 import com.sergiu.babin.dto.BookDTO;
 import com.sergiu.babin.dto.Response;
 import com.sergiu.babin.service.BookService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,13 +26,13 @@ public class BookControllerImpl implements BookController {
     }
 
     @Override
-    public ResponseEntity<Response<Void>> postBook(BookDTO bookDTO) {
+    public ResponseEntity<Response<Void>> postBook(@Valid BookDTO bookDTO) {
         bookService.postBook(bookDTO);
         return ResponseEntity.status(CREATED).build();
     }
 
     @Override
-    public ResponseEntity<Response<Void>> deleteBook(Integer id) {
+    public ResponseEntity<Response<Void>> deleteBook(@PositiveOrZero Integer id) {
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
     }
