@@ -7,6 +7,9 @@ import com.sergiu.babin.model.Book;
 import com.sergiu.babin.repository.BookRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -14,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.sergiu.babin.utils.MessageResponse.SUCCESS;
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
@@ -71,7 +75,6 @@ class BookServiceImplTest {
         BookDTO bookDTO = new BookDTO(1, "Clean Code", "Uncle Bob", 500);
         Book book = new Book(1, "Clean Code", "Uncle Bob", 500);
 
-
         Mockito.when(bookRepository.findById(bookDTO.id())).thenReturn(Optional.of(book));
 
         Assertions.assertThrows(RuntimeException.class, () -> bookService.postBook(bookDTO));
@@ -94,10 +97,11 @@ class BookServiceImplTest {
         Assertions.assertNull(response.payload());
     }
 
-    @Test
+//    @Test
 //    @Disabled
-    void deleteBook_WhenBookIsPresent_ThenReturnSuccess() {
-        Integer bookId = 1;
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void deleteBook_WhenBookIsPresent_ThenReturnSuccess(Integer bookId) {
         Book book = new Book(bookId, "Clean Code", "Uncle Bob", 500);
 
         Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
@@ -120,5 +124,14 @@ class BookServiceImplTest {
         Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(RuntimeException.class, () -> bookService.deleteBook(bookId));
+    }
+
+    static Stream<Arguments> getArguments() {
+
+        return Stream.of(
+                Arguments.of(new Book(1, "Clean Code", "Uncle Bob", 500)),
+                Arguments.of(new Book(2, "Clean Code", "Uncle Bob", 500)),
+                Arguments.of(new Book(3, "Clean Code", "Uncle Bob", 500))
+        );
     }
 }
